@@ -20,6 +20,18 @@ export const setTimeoutInSecondsReturningPromise = (
   });
 };
 
+export const setTimeoutInSecondsUsingAsync = (
+  callback: () => any,
+  time: number
+) => {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      callback();
+      resolve();
+    }, time * 1000);
+  });
+};
+
 export const setTimeoutInMinutes = (callback: () => any, time: number) => {
   setTimeoutInSeconds(callback(), time * 60);
 };
@@ -46,6 +58,25 @@ export const printRandomAfter = () => {
       c = getRandomInt();
       console.log(b, c);
     });
+};
+
+export const printRandomAfter2 = async () => {
+  const delay = (timeInSeconds: number) => {
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, timeInSeconds * 1000);
+    });
+  };
+
+  await delay(1);
+  const a = getRandomInt();
+  const b = getRandomInt();
+  console.log(a, b);
+
+  await delay(1);
+  const c = getRandomInt();
+  console.log(b, c);
 };
 
 function getRandomInt(min = 0, max = 100) {

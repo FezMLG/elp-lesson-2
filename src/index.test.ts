@@ -1,6 +1,7 @@
 import {
   defer,
   printRandomAfter,
+  printRandomAfter2,
   setTimeoutInMinutes,
   setTimeoutInSeconds,
   setTimeoutInSecondsReturningPromise,
@@ -51,19 +52,29 @@ describe("setTimeoutInSeconds with fake timers", () => {
     jest.advanceTimersByTime(1);
   });
 
-  it("should be called after set amount of time with promise", (done) => {
+  it("should be called after set amount of time with promise", () => {
+    return new Promise<void>((resolve) => {
+      const mock = jest.fn();
+      expect.assertions(2);
+
+      setTimeoutInSecondsReturningPromise(mock, 1).then(() => {
+        expect(mock).toHaveBeenCalledTimes(1);
+        resolve();
+      });
+
+      jest.advanceTimersByTime(999);
+      expect(mock).not.toBeCalled();
+      jest.advanceTimersByTime(1);
+    });
+  });
+
+  it("should be called after set amount of time with async/await", async () => {
     const mock = jest.fn();
     expect.assertions(2);
 
-    function callback() {
-      mock();
-      expect(mock).toHaveBeenCalledTimes(1);
-    }
+    await setTimeoutInSecondsReturningPromise(mock, 1);
 
-    setTimeoutInSecondsReturningPromise(callback, 1).then(() => {
-      done();
-    });
-
+    expect(mock).toHaveBeenCalledTimes(1);
     jest.advanceTimersByTime(999);
     expect(mock).not.toBeCalled();
     jest.advanceTimersByTime(1);
@@ -83,6 +94,6 @@ describe("setTimeoutInSeconds with fake timers", () => {
 
 describe("printRandomNumber", () => {
   test("print random number", (done) => {
-    printRandomAfter();
+    printRandomAfter2();
   });
 });
