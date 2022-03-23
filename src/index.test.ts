@@ -1,4 +1,10 @@
-import { defer, setTimeoutInMinutes, setTimeoutInSeconds } from "./index";
+import {
+  defer,
+  printRandomAfter,
+  setTimeoutInMinutes,
+  setTimeoutInSeconds,
+  setTimeoutInSecondsReturningPromise,
+} from "./index";
 
 describe("Defer function", () => {
   it("should throw callback", () => {
@@ -9,7 +15,7 @@ describe("Defer function", () => {
   });
 });
 
-describe("setTimeoutInSeconds", () => {
+describe("setTimeoutInSeconds with fake timers", () => {
   beforeEach(() => {
     jest.useFakeTimers();
   });
@@ -45,14 +51,38 @@ describe("setTimeoutInSeconds", () => {
     jest.advanceTimersByTime(1);
   });
 
+  it("should be called after set amount of time with promise", (done) => {
+    const mock = jest.fn();
+    expect.assertions(2);
+
+    function callback() {
+      mock();
+      expect(mock).toHaveBeenCalledTimes(1);
+    }
+
+    setTimeoutInSecondsReturningPromise(callback, 1).then(() => {
+      done();
+    });
+
+    jest.advanceTimersByTime(999);
+    expect(mock).not.toBeCalled();
+    jest.advanceTimersByTime(1);
+  });
+
   test("should throw callback after time in m", (done) => {
     const temp = jest.fn();
     expect.assertions(1);
     function callback() {
       temp();
-      expect(temp).toHaveBeenCalled();
+      expect(console.log).toHaveBeenCalledWith();
       done();
     }
     setTimeoutInMinutes(callback, 1);
+  });
+});
+
+describe("printRandomNumber", () => {
+  test("print random number", (done) => {
+    printRandomAfter();
   });
 });
