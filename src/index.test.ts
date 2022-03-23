@@ -1,26 +1,21 @@
-import {TurboNumber} from "./TurboNumber";
+import { defer, setTimeoutInSeconds } from "./index";
 
-describe('TurboNumber', () => {
-  let turboNumber: TurboNumber;
+describe("Defer function", () => {
+  it("should throw callback", () => {
+    const temp = jest.fn();
+    defer(temp);
 
-  beforeEach(() => {
-    turboNumber = new TurboNumber(8);
-  })
-  it("subtract 2 from 5", () => {
-    turboNumber.subtract(2)
-    expect(turboNumber.result()).toBe(6)
-  })
+    expect(temp).toHaveBeenCalledTimes(1);
+  });
 
-  it("subtract 3 from 8", () => {
-    expect(turboNumber.subtract(3).result()).toBe(5)
-  })
-
-  it("divides 8 by 2", () => {
-    expect(turboNumber.divide(2).result()).toBe(4)
-  })
-
-  it("throws when dividing by 0", () => {
-    const turboNumber = new TurboNumber(8);
-    expect(() => turboNumber.divide(0)).toThrow('Cannot divide by 0')
-  })
-})
+  test("should throw callback after time in s", (done) => {
+    // jest.useFakeTimers();
+    const temp = jest.fn();
+    function callback() {
+      temp();
+      expect(temp).toHaveBeenCalled();
+      done();
+    }
+    setTimeoutInSeconds(callback, 1);
+  });
+});
